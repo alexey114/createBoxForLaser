@@ -21,7 +21,6 @@ function Field() {
   let [widthTooth, setWidthTooth] = useState<number>(0);                       //ширина зубца
 
   const padding = 20;                                                        //отступ от края поля
-  const margin = 300;                                                        //отступ от края поля
 
   let [coordinateFrontWall, setCoordinateFrontWall] = useState<ICoordinate[]>([])  //массив с координатами фронтальной стенки
   let [coordinateBackWall, setCoordinateBackWall] = useState<ICoordinate[]>([])    //массив с координатами задней стенки
@@ -40,6 +39,10 @@ function Field() {
   let upWall: string = ""                                         //крышка
 
   let toothWall: string = ""                                      //c зубцами
+
+  let numberTeethHeight = ((heightBox - wallThickness * 2) / widthTooth) * 2
+  let numberTeethDepth = ((depthBox - wallThickness * 2) / widthTooth) * 2
+  let numberTeethWidth = ((widthBox - wallThickness * 2) / widthTooth) * 2
 
   //ОТСЛЕЖИВАНИЕ ИЗМЕНЕНИЯ РАЗМЕРА ОКНА БРАУЗЕРА ДЛЯ ПОСЛЕДУЮЩЕЙ АДАПТАЦИИ SVG ПОЛЯ ПОД НЕГО
 
@@ -84,24 +87,192 @@ function Field() {
 
   //ЗАПИСЬ КООРДИНАТ В МАССИВЫ по каждой стороне
 
+  //Лицевая стенка с учетом зубьев
+
   function setFrontCoordinateWall() {
-    let size = [...coordinateFrontWall]
-    size.push({ x: padding, y: padding })
-    size.push({ x: padding, y: +heightBox + padding - (wallThickness * 2) })
-    size.push({ x: +widthBox + padding - (wallThickness * 2), y: +heightBox + padding - (wallThickness * 2) })
-    size.push({ x: +widthBox + padding - (wallThickness * 2), y: padding })
-    size.push({ x: padding, y: padding })
-    setCoordinateFrontWall(size)
+    if (widthTooth === 0 || widthTooth === null) {
+      let size = [...coordinateFrontWall]
+      size.push({ x: padding, y: padding })
+      size.push({ x: padding, y: +heightBox + padding - (wallThickness * 2) })
+      size.push({ x: +widthBox + padding - (wallThickness * 2), y: +heightBox + padding - (wallThickness * 2) })
+      size.push({ x: +widthBox + padding - (wallThickness * 2), y: padding })
+      size.push({ x: padding, y: padding })
+      setCoordinateFrontWall(size)
+    } else {
+      let sizeTopRight = []
+      let sizeBottomLeft = []
+
+
+      // Front-Left
+
+      for (let i = 0; i < numberTeethHeight; i++) {
+        if (i === 0) {
+          sizeBottomLeft.push({ x: padding, y: padding })
+        } else if (i === 1) {
+          sizeBottomLeft.push({ x: padding, y: padding + +widthTooth })
+        } else if (i % 4 === 1) {
+          sizeBottomLeft.push({ x: padding, y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeBottomLeft.push({ x: padding + +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 !== 0) {
+          sizeBottomLeft.push({ x: padding + +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 4 === 0) {
+          sizeBottomLeft.push({ x: padding, y: padding + (widthTooth * Math.ceil(i / 2)) })
+        }
+      }
+
+      // Front-Top
+
+      for (let i = 0; i < numberTeethWidth - 1; i++) {
+        if (i === 0) {
+          sizeTopRight.push({ x: padding, y: padding })
+        } else if (i === 1) {
+          sizeTopRight.push({ x: padding + +widthTooth, y: padding })
+        } else if (i % 4 === 1) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +wallThickness })
+        } else if (i % 2 !== 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +wallThickness })
+        } else if (i % 4 === 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding })
+        }
+      }
+
+      // Front-Right
+
+      for (let i = 0; i < numberTeethHeight; i++) {
+        if (i === 0) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 3), y: padding })
+        } else if (i === 1) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 3), y: padding + +widthTooth })
+        } else if (i % 4 === 1) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 3), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 2), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 !== 0) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 2), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 4 === 0) {
+          sizeTopRight.push({ x: padding + +heightBox - (wallThickness * 3), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        }
+      }
+
+      // Front-Bottom
+
+      for (let i = 0; i < numberTeethHeight - 1; i++) {
+        if (i === 0) {
+          sizeBottomLeft.push({ x: padding, y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i === 1) {
+          sizeBottomLeft.push({ x: padding + +widthTooth, y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i % 4 === 1) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) })
+        } else if (i % 2 !== 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) })
+        } else if (i % 4 === 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) })
+        }
+      }
+
+      let reversed = sizeBottomLeft.reverse()
+      let size = [...coordinateToothWall, ...sizeTopRight, ...reversed]
+      setCoordinateFrontWall(size)
+    }
   }
 
+  //Задняя сторона с учетом зубьев
+
   function setBackCoordinateWall() {
-    let size = [...coordinateBackWall]
-    size.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
-    size.push({ x: padding + +widthBox + (widthBox * 0.1), y: +heightBox + padding - (wallThickness * 2) })
-    size.push({ x: padding + +widthBox - (wallThickness * 2) + (+widthBox * 1.1), y: +heightBox + padding - (wallThickness * 2) })
-    size.push({ x: padding + +widthBox - (wallThickness * 2) + (+widthBox * 1.1), y: padding })
-    size.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
-    setCoordinateBackWall(size)
+    if (widthTooth === 0 || widthTooth === null) {
+      let size = [...coordinateBackWall]
+      size.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
+      size.push({ x: padding + +widthBox + (widthBox * 0.1), y: +heightBox + padding - (wallThickness * 2) })
+      size.push({ x: padding + +widthBox - (wallThickness * 2) + (+widthBox * 1.1), y: +heightBox + padding - (wallThickness * 2) })
+      size.push({ x: padding + +widthBox - (wallThickness * 2) + (+widthBox * 1.1), y: padding })
+      size.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
+      setCoordinateBackWall(size)
+    } else {
+
+      let sizeTopRight = []
+      let sizeBottomLeft = []
+
+      // Back-Left
+
+      for (let i = 0; i < numberTeethHeight; i++) {
+        if (i === 0) {
+          sizeBottomLeft.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
+        } else if (i === 1) {
+          sizeBottomLeft.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding + +widthTooth })
+        } else if (i % 4 === 1) {
+          sizeBottomLeft.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeBottomLeft.push({ x: padding + +wallThickness + +widthBox + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 !== 0) {
+          sizeBottomLeft.push({ x: padding + +wallThickness + +widthBox + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 4 === 0) {
+          sizeBottomLeft.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        }
+      }
+
+      // Back-Bottom
+
+      for (let i = 0; i < numberTeethHeight; i++) {
+        if (i === 0) {
+          sizeBottomLeft.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i === 1) {
+          sizeBottomLeft.push({ x: padding + +widthTooth + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i % 4 === 1) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) })
+        } else if (i % 2 !== 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) })
+        } else if (i % 4 === 0) {
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) })
+        }
+      }
+
+      // Back-Top
+
+      for (let i = 0; i < numberTeethWidth - 1; i++) {
+        if (i === 0) {
+          sizeTopRight.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
+        } else if (i === 1) {
+          sizeTopRight.push({ x: padding + +widthTooth + +widthBox + (widthBox * 0.1), y: padding })
+        } else if (i % 4 === 1) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +wallThickness })
+        } else if (i % 2 !== 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding + +wallThickness })
+        } else if (i % 4 === 0) {
+          sizeTopRight.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1), y: padding })
+        }
+      }
+
+      // Back-Right
+
+      for (let i = 0; i < numberTeethHeight; i++) {
+        if (i === 0) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 3) + (widthBox * 0.1), y: padding })
+        } else if (i === 1) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 3) + (widthBox * 0.1), y: padding + +widthTooth })
+        } else if (i % 4 === 1) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 3) + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 === 0 && i % 4 !== 0) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 2) + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 2 !== 0) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 2) + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        } else if (i % 4 === 0) {
+          sizeTopRight.push({ x: padding + +widthBox * 2 - (wallThickness * 3) + (widthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) })
+        }
+      }
+
+      let reversed = sizeBottomLeft.reverse()
+      let size = [...coordinateToothWall, ...sizeTopRight, ...reversed] // 
+      setCoordinateBackWall(size)
+    }
   }
 
   //Левая сторона с учётом зубьев
@@ -120,14 +291,10 @@ function Field() {
 
     } else {
 
-      let numberTeethHeight = ((heightBox - wallThickness * 2) / widthTooth) * 2
-      let numberTeethDepth = ((depthBox - wallThickness * 2) / widthTooth) * 2
-      let numberTeethWidth = ((widthBox - wallThickness * 2) / widthTooth) * 2
-
       let sizeTopRight = []
       let sizeBottomLeft = []
 
-      // Left
+      // Left-Left
 
       for (let i = 0; i < numberTeethHeight; i++) {
         if (i === 0) {
@@ -145,7 +312,7 @@ function Field() {
         }
       }
 
-      // Top
+      // Left-Top
 
       for (let i = 0; i < numberTeethDepth; i++) {
         if (i === 0) {
@@ -163,7 +330,7 @@ function Field() {
         }
       }
 
-      // Bottom
+      // Left-Right
 
       for (let i = 0; i < numberTeethHeight; i++) {
         if (i === 0) {
@@ -171,31 +338,31 @@ function Field() {
         } else if (i === 1) {
           sizeTopRight.push({ x: padding + +depthBox, y: padding + +widthTooth + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 1) {
-          sizeTopRight.push({ x: padding + +depthBox, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
-          sizeTopRight.push({ x: padding + +depthBox - +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox - +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 !== 0) {
-          sizeTopRight.push({ x: padding + +depthBox - +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox - +wallThickness, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 0) {
-          sizeTopRight.push({ x: padding + +depthBox, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox, y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         }
       }
 
-      // Right
+      // Left-Bottom
 
       for (let i = 0; i < numberTeethDepth; i++) {
         if (i === 0) {
-          sizeBottomLeft.push({ x: padding, y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding, y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i === 1) {
-          sizeBottomLeft.push({ x: padding + +widthTooth, y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + +widthTooth, y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 1) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 !== 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         }
       }
 
@@ -205,26 +372,26 @@ function Field() {
     }
   }
 
+  //Правая сторона с учётом зубьев
+
   function setRightCoordinateWall() {
 
     if (widthTooth === 0 || widthTooth === null) {
 
-    let size = [...coordinateRightWall]
-    size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
-    size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + (heightBox * 2) + (heightBox * 0.1) - (wallThickness * 4) })
-    size.push({ x: padding + +depthBox + (depthBox * 1.1), y: padding + (heightBox * 2) + (heightBox * 0.1) - (wallThickness * 4) })
-    size.push({ x: padding + +depthBox + (depthBox * 1.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
-    size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
-    setCoordinateRightWall(size)
+      let size = [...coordinateRightWall]
+      size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
+      size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + (heightBox * 2) + (heightBox * 0.1) - (wallThickness * 4) })
+      size.push({ x: padding + +depthBox + (depthBox * 1.1), y: padding + (heightBox * 2) + (heightBox * 0.1) - (wallThickness * 4) })
+      size.push({ x: padding + +depthBox + (depthBox * 1.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
+      size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
+      setCoordinateRightWall(size)
 
     } else {
-      let numberTeethHeight = ((heightBox - wallThickness * 2) / widthTooth) * 2
-      let numberTeethDepth = ((depthBox - wallThickness * 2) / widthTooth) * 2
 
       let sizeTopRight = []
       let sizeBottomLeft = []
 
-      // Left
+      // Right-Left
 
       for (let i = 0; i < numberTeethHeight; i++) {
         if (i === 0) {
@@ -232,7 +399,7 @@ function Field() {
         } else if (i === 1) {
           sizeBottomLeft.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +widthTooth + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 1) {
-          sizeBottomLeft.push({ x: padding+ +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
+          sizeBottomLeft.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
           sizeBottomLeft.push({ x: padding + +wallThickness + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 !== 0) {
@@ -242,7 +409,7 @@ function Field() {
         }
       }
 
-      // Top
+      // Right-Top
 
       for (let i = 0; i < numberTeethDepth; i++) {
         if (i === 0) {
@@ -260,7 +427,7 @@ function Field() {
         }
       }
 
-      // Bottom
+      // Right-Right
 
       for (let i = 0; i < numberTeethHeight; i++) {
         if (i === 0) {
@@ -268,31 +435,31 @@ function Field() {
         } else if (i === 1) {
           sizeTopRight.push({ x: padding + +depthBox + +depthBox + (depthBox * 0.1), y: padding + +widthTooth + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 1) {
-          sizeTopRight.push({ x: padding + +depthBox + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
-          sizeTopRight.push({ x: padding + +depthBox - +wallThickness + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox - +wallThickness + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 !== 0) {
-          sizeTopRight.push({ x: padding + +depthBox - +wallThickness + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox - +wallThickness + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 0) {
-          sizeTopRight.push({ x: padding + +depthBox + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeTopRight.push({ x: padding + +depthBox + +depthBox + (depthBox * 0.1), y: padding + (widthTooth * Math.ceil(i / 2)) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         }
       }
 
-      // Right
+      // Right-Bottom
 
       for (let i = 0; i < numberTeethDepth; i++) {
         if (i === 0) {
-          sizeBottomLeft.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i === 1) {
-          sizeBottomLeft.push({ x: padding + +widthTooth + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + +widthTooth + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 1) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 2 !== 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 3) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         } else if (i % 4 === 0) {
-          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2)})
+          sizeBottomLeft.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +depthBox + (depthBox * 0.1), y: padding + +heightBox - (wallThickness * 2) + +heightBox + (heightBox * 0.1) - (wallThickness * 2) })
         }
       }
 
@@ -301,6 +468,8 @@ function Field() {
       setCoordinateRightWall(size)
     }
   }
+
+  //Нижняя стенка
 
   function setBottomCoordinateWall() {
     let size = [...coordinateBottomWall]
@@ -312,6 +481,8 @@ function Field() {
     setCoordinateBottomWall(size)
   }
 
+  //Верхняя стенка
+
   function setUpCoordinateWall() {
     let size = [...coordinateUpWall]
     size.push({ x: padding + +depthBox + (depthBox * 0.1), y: padding + (widthBox * 2) + (widthBox * 0.1 * 2) - (wallThickness * 4) })
@@ -322,19 +493,9 @@ function Field() {
     setCoordinateUpWall(size)
   }
 
-  function setToothCoordinateWall() {
-    // size.push({ x: margin, y: margin}) // 0 0
-    // size.push({ x: margin , y: margin + +widthTooth}) // 0 20
-    // size.push({ x: margin + +wallThickness, y: margin + +widthTooth}) //5 20
-    // size.push({ x: margin + +wallThickness, y: margin + (widthTooth*2)})   //5 40
-    // size.push({ x:  margin, y: margin + (widthTooth*2)})      //0 40
-    // size.push({ x:  margin, y: margin + (widthTooth*3)})      //0 60
-    // size.push({ x:  margin + +wallThickness, y: margin + (widthTooth*3)})     //5 60
-    // size.push({ x:  margin + +wallThickness, y: margin + (widthTooth*4)})     //5 80
-    // size.push({ x:  margin, y: margin + (widthTooth*4)})           //0 80
-    // size.push({ x:  margin, y: margin + (widthTooth*5)})           //0 100
-    //сделать расчет в зависимости от ширины зубы, если 0, то первый вариант, если больше, то церез цикл построение
-  }
+  // function setToothCoordinateWall() {
+
+  // }
 
   //Очищение массива от координат при вводе новых данных
 
@@ -366,7 +527,7 @@ function Field() {
       setRightCoordinateWall()
       setBottomCoordinateWall()
       setUpCoordinateWall()
-      setToothCoordinateWall()
+      // setToothCoordinateWall()
     }
   }
 
@@ -392,16 +553,18 @@ function Field() {
   return (
 
     <div className='fieldsContainer' style={{ width: windowSize[0], height: windowSize[1] }}>
-      <svg className='fieldsSVG' width={windowSize[0]} height={windowSize[1]} xmlns="http://www.w3.org/2000/svg">
-        <path d={frontWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-        <path d={backWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-        <path d={leftWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-        <path d={rightWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-        <path d={bottomWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-        <path d={upWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+      <div className='fieldsSVG'>
+        <svg width={widthBox * 3.2} height={heightBox * 3.2} xmlns="http://www.w3.org/2000/svg">
+          <path d={frontWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+          <path d={backWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+          <path d={leftWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+          <path d={rightWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+          <path d={bottomWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+          <path d={upWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
 
-        <path d={toothWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
-      </svg>
+          <path d={toothWall} stroke="#FF0000" fill="none" stroke-width="0.3" vector-effect="non-scaling-stroke" />
+        </svg>
+      </div>
 
       <div className='buttonBox'>
 
@@ -437,3 +600,43 @@ export default Field
 
 //ЗАДАЧИ:
 // 1.
+
+//Варианты
+
+//Пытался сделать формирование зубьев от центра
+
+// let widthFront = widthBox - (wallThickness*2)
+// let numberTooth = widthFront/widthTooth
+
+// console.log(widthFront)
+
+// for(let i=0; i<numberTooth+1;i++){
+//   if(i===0){
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2, y:padding + +heightBox - (wallThickness * 3)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2, y:padding + +heightBox - (wallThickness * 3)})
+//   } else if (i === 1) {
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2, y:padding + +heightBox - (wallThickness * 3)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2, y:padding + +heightBox - (wallThickness * 3)})
+//     console.log({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2, y:padding + +heightBox - (wallThickness * 3)})
+//   } else if (i === 2) {
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2, y:padding + +heightBox - (wallThickness * 2)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2, y:padding + +heightBox - (wallThickness * 2)})
+//     console.log('i % 2 === 0 && i % 4 !== 0')
+//   } else if (i % 4 === 1) {
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2 - widthTooth*Math.floor(i / 2), y:padding + +heightBox - (wallThickness * 3)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2 + widthTooth*Math.floor(i / 2), y:padding + +heightBox - (wallThickness * 3)})
+//     console.log('i % 4 === 1')
+//   } else if (i % 2 === 0 && i % 4 !== 0) {
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2 - widthTooth*Math.floor(i/3), y:padding + +heightBox - (wallThickness * 2)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2 + widthTooth*Math.floor(i/3), y:padding + +heightBox - (wallThickness * 2)})
+//     console.log('i % 2 === 0 && i % 4 !== 0')
+//   } else if (i % 2 !== 0) {
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2 - widthTooth*Math.floor(i / 2), y:padding + +heightBox - (wallThickness * 2)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2 + widthTooth*Math.floor(i / 2), y:padding + +heightBox - (wallThickness * 2)})
+//     console.log('i % 2 !== 0')
+//   } else if (i % 4 === 0){
+//     bottomLeft.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 - widthTooth/2 - widthTooth*Math.floor(i / 2.2), y:padding + +heightBox - (wallThickness * 3)})
+//     bottomRight.push({x:padding + +widthBox + widthBox*0.1 + widthFront/2 + widthTooth/2 + widthTooth*Math.floor(i / 2.2), y:padding + +heightBox - (wallThickness * 3)})
+//     console.log('i % 4 === 0')
+//   } 
+// }

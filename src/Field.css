@@ -1,6 +1,13 @@
 .fieldsContainer{
-  margin: 0 auto;
+  margin: 10px auto;
+
+}
+
+.fieldsSVG{
   border: solid 1px blue;
+  overflow: auto;
+  height: 95%;
+  max-height: 1200px;
 }
 
 .buttonBox{
