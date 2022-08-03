@@ -728,23 +728,23 @@ function Field() {
 
         <div style={{ margin: 10 }}>
           <label htmlFor="width" style={{ padding: 15 }}>width (mm)</label>
-          <input type="number" id="width" onChange={defineWidth} />
+          <input type="number" id="width" onChange={defineWidth} placeholder="ширина"/>
         </div>
         <div style={{ margin: 10 }}>
           <label htmlFor="height" style={{ padding: 15 }}>height (mm)</label>
-          <input type="number" id="height" onChange={defineHeight} />
+          <input type="number" id="height" onChange={defineHeight} placeholder="высота"/>
         </div>
         <div style={{ margin: 10 }}>
           <label htmlFor="depth" style={{ padding: 15 }}>depth (mm)</label>
-          <input type="number" id="depth" onChange={defineDepth} />
+          <input type="number" id="depth" onChange={defineDepth} placeholder="глубина"/>
         </div>
         <div style={{ margin: 10 }}>
           <label htmlFor="thickness" style={{ padding: 15 }}>thickness (mm)</label>
-          <input type="number" id="thickness" onChange={defineThickness} />
+          <input type="number" id="thickness" onChange={defineThickness} placeholder="толщина" />
         </div>
         <div style={{ margin: 10 }}>
           <label htmlFor="tooth" style={{ padding: 15 }}>tooth (mm)</label>
-          <input type="number" id="tooth" onChange={defineTooth} />
+          <input type="number" id="tooth" onChange={defineTooth} placeholder="ширина зуба"/>
         </div>
 
         <button className="recalculate" onClick={(event) => createArrayCoordinate(event)}> Пересчитать </button>
