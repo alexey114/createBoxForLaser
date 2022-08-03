@@ -44,7 +44,13 @@ function Field() {
   let numberTeethDepth = (depthBox / widthTooth) * 2
   let numberTeethWidth = (widthBox / widthTooth) * 2
 
-  let toothCentering = widthTooth/2
+  let toothCentering = widthTooth / 2
+
+  let widthAdjustment = 1;
+  let heightAdjustment = 1;
+  let depthAdjustment = 1;
+  let toothAdjustment = 1;
+  let thicknessAdjustment = 1;
 
   //ОТСЛЕЖИВАНИЕ ИЗМЕНЕНИЯ РАЗМЕРА ОКНА БРАУЗЕРА ДЛЯ ПОСЛЕДУЮЩЕЙ АДАПТАЦИИ SVG ПОЛЯ ПОД НЕГО
 
@@ -199,15 +205,15 @@ function Field() {
         if (i === 0) {
           sizeBack.push({ x: padding + +widthBox + (widthBox * 0.1), y: padding })
         } else if (i === 1) {
-          sizeBack.push({ x: padding + +widthTooth + +widthBox + (widthBox * 0.1) + toothCentering, y: padding })
+          sizeBack.push({ x: padding + +widthTooth + +widthBox + (widthBox * 0.1) + +toothCentering, y: padding })
         } else if (i % 4 === 1) {
-          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + toothCentering, y: padding })
+          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + +toothCentering, y: padding })
         } else if (i % 2 === 0 && i % 4 !== 0) {
-          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + toothCentering, y: padding + +wallThickness })
+          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + +toothCentering, y: padding + +wallThickness })
         } else if (i % 2 !== 0) {
-          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + toothCentering, y: padding + +wallThickness })
+          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + +toothCentering, y: padding + +wallThickness })
         } else if (i % 4 === 0) {
-          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + toothCentering, y: padding })
+          sizeBack.push({ x: padding + (widthTooth * Math.ceil(i / 2)) + +widthBox + (widthBox * 0.1) + +toothCentering, y: padding })
         }
       }
 
@@ -297,7 +303,7 @@ function Field() {
         if (i === 0) {
           sizeLeft.push({ x: padding + +wallThickness, y: padding + +heightBox + (heightBox * 0.1) })
         } else if (i === 1) {
-          sizeLeft.push({ x: padding  + +wallThickness + +widthTooth, y: padding + +heightBox + (heightBox * 0.1) })
+          sizeLeft.push({ x: padding + +wallThickness + +widthTooth, y: padding + +heightBox + (heightBox * 0.1) })
         } else if (i % 4 === 1) {
           sizeLeft.push({ x: padding + +wallThickness + (widthTooth * Math.ceil(i / 2)), y: padding + +heightBox + (heightBox * 0.1) })
         } else if (i % 2 === 0 && i % 4 !== 0) {
